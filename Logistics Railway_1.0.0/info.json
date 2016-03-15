@@ -1,0 +1,9 @@
+{
+  "name": "Logistics Railway",
+  "version": "1.0.0",
+  "title": "Logistics Railway",
+  "author": "Supercheese",
+  "homepage": "https://forums.factorio.com/viewtopic.php?f=93&t=21462",
+  "dependencies": ["base >= 0.12.17"],
+  "description": "Turn your regular, boring old cargo wagons into Logistics Wagons! Now your bots can load and unload directly into the wagons -- no inserters needed!"
+}
