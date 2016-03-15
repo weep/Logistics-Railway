@@ -130,19 +130,16 @@ function syncChests(train)
 	for i = 1, #train.cargo_wagons do
 		local wagon = train.cargo_wagons[i]
 		if wagon.type == "cargo-wagon" then
-			local requester = wagon.surface.find_entity("requester-chest-from-wagon", wagon.position)
-			local passive_provider = wagon.surface.find_entity("passive-provider-chest-from-wagon", wagon.position)
-			local active_provider = wagon.surface.find_entity("active-provider-chest-from-wagon", wagon.position)
-			local storage = wagon.surface.find_entity("storage-chest-from-wagon", wagon.position)
-			prepareForTrainDepartment(requester, wagon)
-			prepareForTrainDepartment(passive_provider, wagon)
-			prepareForTrainDepartment(active_provider, wagon)
-			prepareForTrainDepartment(storage, wagon)
+			prepareForTrainDepartment(wagon, "requester-chest-from-wagon")
+			prepareForTrainDepartment(wagon, "passive-provider-chest-from-wagon")
+			prepareForTrainDepartment(wagon, "active-provider-chest-from-wagon")
+			prepareForTrainDepartment(wagon, "storage-chest-from-wagon")
 		end
 	end
 end
 
-function prepareForTrainDepartment(chestEntity, wagon)
+function prepareForTrainDepartment(wagon, chestName)
+	local chestEntity = wagon.surface.find_entity(chestName, wagon.position)
 	if chestEntity then
 		local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 		wagon_inventory.setbar()
