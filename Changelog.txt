@@ -1,3 +1,9 @@
 Version 1.0.0 - March 14, 2016
 ------------------------------
 Initial release, featuring special Logistics Rails that will enable you to turn your regular Cargo Wagons into Logistics Wagons.
+
+
+Version 1.0.1 - March 15, 2016
+------------------------------
+Inserters are no longer forcibly disabled in the code; instead, wagons are now barred-out (all slots turned red) when they are interacting with the logistics network.
+Wagons are now set to be non-minable and inoperable when interacting with the logistics network.

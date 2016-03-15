@@ -31,6 +31,12 @@ script.on_event(defines.events.on_preplayer_mined_item, function(event)
 		end
 		return event.entity.clear_items_inside()
 	end
+	if event.entity.name == "requester-rail" then
+		local dummy = event.entity.surface.find_entity("requester-rail-dummy-chest", event.entity.position)
+		if dummy then
+			dummy.destroy()
+		end
+	end
 end)
 
 script.on_event(defines.events.on_entity_died, function(event)
@@ -69,25 +75,6 @@ script.on_event(defines.events.on_train_changed_state, function(event)
 	end
 end)
 
-function toggleInserters(entity, state) 		-- Enable/disable inserters near the entity
-	local box = entity.prototype.collision_box	-- Would like this to be based on the collision box, but it's hard coded for now
-	box.left_top.x = -2.5
-	box.left_top.y = -3.5
-	box.right_bottom.x = 2.5
-	box.right_bottom.y = 3.5
-	if entity.orientation == 0.25 or entity.orientation == 0.75 then	-- Horizontal: flip X and Y
-		local temp = box												-- Diagonals are disabled in the entity prototype so we don't have to worry about them
-		box.left_top.x = temp.left_top.y
-		box.left_top.y = temp.left_top.x + 0.5							-- For whatever reason we need to adjust the values here
-		box.right_bottom.x = temp.right_bottom.y
-		box.right_bottom.y = temp.right_bottom.y - 0.5
-	end
-	local inserters = entity.surface.find_entities_filtered{area = {{entity.position.x + box.left_top.x, entity.position.y + box.left_top.y}, {entity.position.x + box.right_bottom.x, entity.position.y + box.right_bottom.y}}, type= "inserter"}
-	for i, inserter in pairs(inserters) do
-		inserter.active = state
-	end
-end
-
 function copyInventory(from, to)
 	local inventory = from.get_inventory(defines.inventory.chest)
 	local contents = inventory.get_contents()
@@ -105,10 +92,11 @@ function placeChests(train)
 			local active_provider = wagon.surface.find_entity("active-provider-rail", wagon.position)
 			local storage = wagon.surface.find_entity("storage-rail", wagon.position)
 			if requester then
-				toggleInserters(wagon, false)
+				wagon.minable = false
+				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "requester-chest-from-wagon", position = wagon.position, force = wagon.force})
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar(nil)
+				wagon_inventory.setbar(0)
 				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				if #chest_inventory > #wagon_inventory then
 					chest_inventory.setbar(#wagon_inventory)
@@ -124,26 +112,29 @@ function placeChests(train)
 				end
 			end
 			if passive_provider then
-				toggleInserters(wagon, false)
+				wagon.minable = false
+				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "passive-provider-chest-from-wagon", position = wagon.position, force = wagon.force})
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar(nil)
+				wagon_inventory.setbar(0)
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
 			end
 			if active_provider then
-				toggleInserters(wagon, false)
+				wagon.minable = false
+				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "active-provider-chest-from-wagon", position = wagon.position, force = wagon.force})
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar(nil)
+				wagon_inventory.setbar(0)
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
 			end
 			if storage then
-				toggleInserters(wagon, false)
+				wagon.minable = false
+				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "storage-chest-from-wagon", position = wagon.position, force = wagon.force})
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar(nil)
+				wagon_inventory.setbar(0)
 				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				if #chest_inventory > #wagon_inventory then
 					chest_inventory.setbar(#wagon_inventory)
@@ -168,28 +159,32 @@ function syncChests(train)
 				wagon_inventory.setbar()
 				copyInventory(requester, wagon) -- Chest to wagon
 				requester.destroy()
-				toggleInserters(wagon, true)
+				wagon.minable = true
+				wagon.operable = true
 			end
 			if passive_provider then
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				wagon_inventory.setbar()
 				copyInventory(passive_provider, wagon) -- Chest to wagon
 				passive_provider.destroy()
-				toggleInserters(wagon, true)
+				wagon.minable = true
+				wagon.operable = true
 			end
 			if active_provider then
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				wagon_inventory.setbar()
 				copyInventory(active_provider, wagon) -- Chest to wagon
 				active_provider.destroy()
-				toggleInserters(wagon, true)
+				wagon.minable = true
+				wagon.operable = true
 			end
 			if storage then
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				wagon_inventory.setbar()
 				copyInventory(storage, wagon) -- Chest to wagon
 				storage.destroy()
-				toggleInserters(wagon, true)
+				wagon.minable = true
+				wagon.operable = true
 			end
 		end
 	end
