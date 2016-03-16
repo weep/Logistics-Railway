@@ -7,3 +7,8 @@ Version 1.0.1 - March 15, 2016
 ------------------------------
 Inserters are no longer forcibly disabled in the code; instead, wagons are now barred-out (all slots turned red) when they are interacting with the logistics network.
 Wagons are now set to be non-minable and inoperable when interacting with the logistics network.
+
+
+Version 1.0.2 - March 16, 2016
+------------------------------
+Fixed a possible bug with requester rails.
