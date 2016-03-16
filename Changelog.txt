@@ -12,3 +12,8 @@ Wagons are now set to be non-minable and inoperable when interacting with the lo
 Version 1.0.2 - March 16, 2016
 ------------------------------
 Fixed a possible bug with requester rails.
+
+
+Version 1.0.3 - March 17, 2016
+------------------------------
+Fixed an issue which was causing vanilla straight rails to be unable to cross each other.
