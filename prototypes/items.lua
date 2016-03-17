@@ -2,7 +2,7 @@ data:extend({
 {
 	type = "item",
 	name = "dummy-item",
-	icon = "__Logistics Railway__/graphics/blue-ball.png",
+	icon = "__Logistics Railway__/graphics/control-panel.png",
 	flags = {"hidden"},
 	subgroup = "transport",
 	order = "z",

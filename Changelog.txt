@@ -17,3 +17,6 @@ Fixed a possible bug with requester rails.
 Version 1.0.3 - March 17, 2016
 ------------------------------
 Fixed an issue which was causing vanilla straight rails to be unable to cross each other.
+Fixed an issue where you could get stuck in a diagonal building mode and be allowed to place diagonal logistics rails -- this is now prevented from happening and you are snapped back to orthogonal if you try to place a diagonal Logistics Rail.
+Fixed an issue where Logistics Rails could overlap -- overlapping can cause issues, and thus is disallowed.
+Changed the blue ball icon for requester rails into a control panel icon.
