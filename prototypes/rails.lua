@@ -1,5 +1,3 @@
-data.raw["straight-rail"]["straight-rail"].fast_replaceable_group = "rails"
-
 local storage_rail = util.table.deepcopy(data.raw["straight-rail"]["straight-rail"])
 local passive_provider_rail = util.table.deepcopy(data.raw["straight-rail"]["straight-rail"])
 local active_provider_rail = util.table.deepcopy(data.raw["straight-rail"]["straight-rail"])
