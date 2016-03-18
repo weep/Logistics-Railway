@@ -7,23 +7,11 @@ script.on_event(defines.events.on_built_entity, function(event)
 			if event.created_entity.direction == defines.direction.northeast or event.created_entity.direction == defines.direction.southeast or event.created_entity.direction == defines.direction.southwest or event.created_entity.direction == defines.direction.northwest then
 				event.created_entity.destroy() -- No diagonal ghosts allowed
 				return
-			end
-			local requester = event.created_entity.surface.find_entity("requester-rail", event.created_entity.position)
-			local passive_provider = event.created_entity.surface.find_entity("passive-provider-rail", event.created_entity.position)
-			local active_provider = event.created_entity.surface.find_entity("active-provider-rail", event.created_entity.position)
-			local storage = event.created_entity.surface.find_entity("storage-rail", event.created_entity.position)
-			if requester then
-				requester.order_deconstruction(requester.force)	-- No overlapping Logistics Rails allowed
-			end
-			if passive_provider then
-				passive_provider.order_deconstruction(passive_provider.force)
-			end
-			if active_provider then
-				active_provider.order_deconstruction(active_provider.force)
-			end
-			if storage then
-				storage.order_deconstruction(storage.force)
-			end
+			end	
+			orderEntityDeconstruction(event.created_entity.surface, "requester-rail", event.created_entity.position) -- No overlapping Logistics Rails allowed
+			orderEntityDeconstruction(event.created_entity.surface, "passive-provider-rail", event.created_entity.position)
+			orderEntityDeconstruction(event.created_entity.surface, "active-provider-rail", event.created_entity.position)
+			orderEntityDeconstruction(event.created_entity.surface, "storage-rail", event.created_entity.position)
 			return
 		end
 	end
@@ -39,70 +27,45 @@ script.on_event(defines.events.on_built_entity, function(event)
 			player.insert{name=previous_name, count=(previous_count) + 1}
 			return
 		end
-		local extradummy = event.created_entity.surface.find_entity("requester-rail-dummy-chest", event.created_entity.position) -- Don't want any duplicate dummy chests
-		if extradummy then
-			extradummy.destroy()
-		end
-		local rail = event.created_entity.surface.find_entity("straight-rail", event.created_entity.position) -- While vanilla Straight Rails can coexist on the same tile, Logistics Rails should not
-		if rail then
+		removeDummy(event.created_entity.surface, "requester-rail-dummy-chest", event.created_entity.position) -- Don't want any duplicate dummy chests
+		if removeDummy(event.created_entity.surface, "straight-rail", event.created_entity.position) then
 			player.insert{name="straight-rail", count=1}
-			rail.destroy()
 		end
 	end
 	if event.created_entity.name == "requester-rail" then
-		local dummy = event.created_entity.surface.create_entity({name = "requester-rail-dummy-chest", position = event.created_entity.position, force = event.created_entity.force})
-		dummy.insert{name="dummy-item", count=1}
+		insertDummyItem(event.created_entity.surface, "requester-rail-dummy-chest", event.created_entity.position, event.created_entity.force)
 	end
 end)
 
 script.on_event(defines.events.on_robot_built_entity, function(event)
-	local extradummy = event.created_entity.surface.find_entity("requester-rail-dummy-chest", event.created_entity.position) -- Don't want any duplicate dummy chests
-	if extradummy then
-		extradummy.destroy()
-	end
+	removeDummy(event.created_entity.surface, "requester-rail-dummy-chest", event.created_entity.position) -- Don't want any duplicate dummy chests
 	if event.created_entity.name == "requester-rail" or event.created_entity.name == "passive-provider-rail" or event.created_entity.name == "active-provider-rail" or event.created_entity.name == "storage-rail" then
-		local rail = event.created_entity.surface.find_entity("straight-rail", event.created_entity.position)
-		if rail then
-			rail.order_deconstruction(rail.force) -- While vanilla Straight Rails can coexist on the same tile, Logistics Rails should not
-		end
+		orderEntityDeconstruction(event.created_entity.surface, "straight-rail", event.created_entity.position) -- While vanilla Straight Rails can coexist on the same tile, Logistics Rails should not
 	end
 	if event.created_entity.name == "requester-rail" then
-		local dummy = event.created_entity.surface.create_entity({name = "requester-rail-dummy-chest", position = event.created_entity.position, force = event.created_entity.force})
-		dummy.insert{name="dummy-item", count=1}
+		insertDummyItem(event.created_entity.surface, "requester-rail-dummy-chest", event.created_entity.position, event.created_entity.force)
 	end
 end)
 
 script.on_event(defines.events.on_preplayer_mined_item, function(event)
 	if event.entity.name == "requester-rail-dummy-chest" then
-		local dummy = event.entity.surface.find_entity("requester-rail", event.entity.position)
-		if dummy then
-			dummy.destroy()
-		end
+		removeDummy(event.entity.surface, "requester-rail", event.entity.position)
 		return event.entity.clear_items_inside()
 	end
 	if event.entity.name == "requester-rail" then
-		local dummy = event.entity.surface.find_entity("requester-rail-dummy-chest", event.entity.position)
-		if dummy then
-			dummy.destroy()
-		end
+		removeDummy(event.entity.surface, "requester-rail-dummy-chest", event.entity.position)
 	end
 end)
 
 script.on_event(defines.events.on_robot_pre_mined, function(event) -- The dummy chest can't actually be robo-deconstructed, so we don't have to worry about it
 	if event.entity.name == "requester-rail" then
-		local dummy = event.entity.surface.find_entity("requester-rail-dummy-chest", event.entity.position)
-		if dummy then
-			dummy.destroy()
-		end
+		removeDummy(event.entity.surface, "requester-rail-dummy-chest", event.entity.position)
 	end
 end)
 
 script.on_event(defines.events.on_entity_died, function(event) -- The dummy chest also can't die (indestructible), so we don't have to worry about it
 	if event.entity.name == "requester-rail" then
-		local dummy = event.entity.surface.find_entity("requester-rail-dummy-chest", event.entity.position)
-		if dummy then
-			dummy.destroy()
-		end
+		removeDummy(event.entity.surface, "requester-rail-dummy-chest", event.entity.position)
 	end
 end)
 
@@ -189,42 +152,43 @@ function syncChests(train)
 	for i = 1, #train.cargo_wagons do
 		local wagon = train.cargo_wagons[i]
 		if wagon.type == "cargo-wagon" then
-			local requester = wagon.surface.find_entity("requester-chest-from-wagon", wagon.position)
-			local passive_provider = wagon.surface.find_entity("passive-provider-chest-from-wagon", wagon.position)
-			local active_provider = wagon.surface.find_entity("active-provider-chest-from-wagon", wagon.position)
-			local storage = wagon.surface.find_entity("storage-chest-from-wagon", wagon.position)
-			if requester then
-				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar()
-				copyInventory(requester, wagon) -- Chest to wagon
-				requester.destroy()
-				wagon.minable = true
-				wagon.operable = true
-			end
-			if passive_provider then
-				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar()
-				copyInventory(passive_provider, wagon) -- Chest to wagon
-				passive_provider.destroy()
-				wagon.minable = true
-				wagon.operable = true
-			end
-			if active_provider then
-				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar()
-				copyInventory(active_provider, wagon) -- Chest to wagon
-				active_provider.destroy()
-				wagon.minable = true
-				wagon.operable = true
-			end
-			if storage then
-				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
-				wagon_inventory.setbar()
-				copyInventory(storage, wagon) -- Chest to wagon
-				storage.destroy()
-				wagon.minable = true
-				wagon.operable = true
-			end
+			prepareDeparture(wagon, "requester-chest-from-wagon")
+			prepareDeparture(wagon, "passive-provider-chest-from-wagon")
+			prepareDeparture(wagon, "active-provider-chest-from-wagon")
+			prepareDeparture(wagon, "storage-chest-from-wagon")
 		end
 	end
+end
+
+function prepareDeparture(wagon, chestName)
+	local chest = wagon.surface.find_entity(chestName, wagon.position)
+	if chest then
+		local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
+		wagon_inventory.setbar()
+		copyInventory(chest, wagon) -- Chest to wagon
+		chest.destroy()
+		wagon.minable = true
+		wagon.operable = true
+	end
+end
+
+function orderEntityDeconstruction(surface, entityName, position)
+	local chest = surface.find_entity(chestName, position)
+	if chest then
+		chest.order_deconstruction(chest.force)
+	end
+end
+
+function insertDummyItem(surface, chestName, chestPosition, chestForce)
+	local dummy = surface.create_entity({name = chestName, position = chestPosition, force = chestForce})
+	dummy.insert{name="dummy-item", count=1}
+end
+
+function removeDummy(surface, dummyName, position)
+	local dummy = surface.find_entity(dummyName, position)
+	if dummy then
+		dummy.destroy()
+		return true
+	end
+	return false
 end
