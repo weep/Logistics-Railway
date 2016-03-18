@@ -18,10 +18,10 @@ passive_provider_rail.flags = {"placeable-neutral", "player-creation"}
 active_provider_rail.flags = {"placeable-neutral", "player-creation"}
 requester_rail.flags = {"placeable-neutral", "player-creation"}
 
-storage_rail.collision_box = {{-0.7, -0.99}, {0.7, 0.99}}
-passive_provider_rail.collision_box = {{-0.7, -0.99}, {0.7, 0.99}}
-active_provider_rail.collision_box = {{-0.7, -0.99}, {0.7, 0.99}}
-requester_rail.collision_box = {{-0.7, -0.99}, {0.7, 0.99}}
+storage_rail.collision_box = {{-0.7, -0.99999}, {0.7, 0.99999}}
+passive_provider_rail.collision_box = {{-0.7, -0.99999}, {0.7, 0.99999}}
+active_provider_rail.collision_box = {{-0.7, -0.99999}, {0.7, 0.99999}}
+requester_rail.collision_box = {{-0.7, -0.99999}, {0.7, 0.99999}}
 
 -- requester_rail.selection_box = {{-0.1, -0.1}, {0.1, 0.1}} -- This doesn't seem to actually work
 
