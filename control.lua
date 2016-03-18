@@ -7,7 +7,7 @@ script.on_event(defines.events.on_built_entity, function(event)
 			if event.created_entity.direction == defines.direction.northeast or event.created_entity.direction == defines.direction.southeast or event.created_entity.direction == defines.direction.southwest or event.created_entity.direction == defines.direction.northwest then
 				event.created_entity.destroy() -- No diagonal ghosts allowed
 				return
-			end	
+			end
 			orderEntityDeconstruction(event.created_entity.surface, "requester-rail", event.created_entity.position) -- No overlapping Logistics Rails allowed
 			orderEntityDeconstruction(event.created_entity.surface, "passive-provider-rail", event.created_entity.position)
 			orderEntityDeconstruction(event.created_entity.surface, "active-provider-rail", event.created_entity.position)
@@ -173,7 +173,7 @@ function prepareDeparture(wagon, chestName)
 end
 
 function orderEntityDeconstruction(surface, entityName, position)
-	local chest = surface.find_entity(chestName, position)
+	local chest = surface.find_entity(entityName, position)
 	if chest then
 		chest.order_deconstruction(chest.force)
 	end
