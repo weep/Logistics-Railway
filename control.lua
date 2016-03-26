@@ -1,6 +1,36 @@
 require "util"
 require "defines"
 
+local on_chest_created = nil
+local on_chest_destroyed = nil
+
+function getOrLoadCreatedEvent()
+  if on_chest_created == nil then
+    on_chest_created = script.generate_event_name()
+  end
+  return on_chest_created
+end
+
+function getOrLoadDestroyedEvent()
+  if on_chest_destroyed == nil then
+    on_chest_destroyed = script.generate_event_name()
+  end
+  return on_chest_destroyed
+end
+
+function generateEvents()
+  getOrLoadCreatedEvent()
+  getOrLoadDestroyedEvent()
+end
+
+script.on_load(function()
+   generateEvents()
+end)
+ 
+script.on_init(function()
+  generateEvents()
+end)
+
 script.on_event(defines.events.on_built_entity, function(event)
 	if event.created_entity.name == "entity-ghost" then
 		if event.created_entity.ghost_name == "requester-rail" or event.created_entity.ghost_name == "passive-provider-rail" or event.created_entity.ghost_name == "active-provider-rail" or event.created_entity.ghost_name == "storage-rail" then
@@ -93,6 +123,7 @@ function placeChests(train)
 			local passive_provider = wagon.surface.find_entity("passive-provider-rail", wagon.position)
 			local active_provider = wagon.surface.find_entity("active-provider-rail", wagon.position)
 			local storage = wagon.surface.find_entity("storage-rail", wagon.position)
+			local created = false
 			if requester then
 				wagon.minable = false -- Don't want any changes to the wagon's inventory while it's been copied over to the proxy chest
 				wagon.operable = false
@@ -112,6 +143,7 @@ function placeChests(train)
 						chest.set_request_slot(request, s)
 					end
 				end
+        created = chest
 			end
 			if passive_provider then
 				wagon.minable = false
@@ -121,6 +153,7 @@ function placeChests(train)
 				wagon_inventory.setbar(0)
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
+        created = chest
 			end
 			if active_provider then
 				wagon.minable = false
@@ -130,6 +163,7 @@ function placeChests(train)
 				wagon_inventory.setbar(0)
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
+        created = chest
 			end
 			if storage then
 				wagon.minable = false
@@ -143,6 +177,10 @@ function placeChests(train)
 				end
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
+        created = chest
+			end
+			if created then
+			   game.raise_event(on_chest_created, {chest=created, wagon_index=i, train=train})
 			end
 		end
 	end
@@ -156,6 +194,7 @@ function syncChests(train)
 			prepareDeparture(wagon, "passive-provider-chest-from-wagon")
 			prepareDeparture(wagon, "active-provider-chest-from-wagon")
 			prepareDeparture(wagon, "storage-chest-from-wagon")
+			game.raise_event(on_chest_destroyed, {wagon_index=i, train=train})
 		end
 	end
 end
@@ -192,3 +231,14 @@ function removeDummy(surface, dummyName, position)
 	end
 	return false
 end
+
+remote.add_interface("logistics_railway",
+  {
+    get_chest_created_event = function()
+      return getOrLoadCreatedEvent()
+    end,
+    
+    get_chest_destroyed_event = function()
+      return getOrLoadDestroyedEvent()
+    end,
+  })
