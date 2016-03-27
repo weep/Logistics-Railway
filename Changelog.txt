@@ -25,3 +25,8 @@ Changed the blue ball icon for requester rails into a control panel icon.
 Version 1.0.4 - March 18, 2016
 ------------------------------
 Increase collision_box sizes of rails and of the invisible dummy requester chest in order to minimize the chance of a wagon failing to detect a Logistics Rail beneath it.
+
+
+Version 1.0.5 - March 27, 2016
+------------------------------
+Now compatible with Smart Trains (v0.3.77 or greater), thanks to Choumiko!
