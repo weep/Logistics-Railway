@@ -26,7 +26,7 @@ end
 script.on_load(function()
    generateEvents()
 end)
- 
+
 script.on_init(function()
   generateEvents()
 end)
@@ -129,6 +129,24 @@ function placeChests(train)
 				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "requester-chest-from-wagon", position = wagon.position, force = wagon.force})
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
+				local wagon_filters = {}
+				local wagon_filters_count = {}
+				for f = 1, #wagon_inventory do
+					local _slot_filter = wagon.get_filter(f)
+					if _slot_filter then
+						local _slot_filter_not_listed = true
+						for l = 1, #wagon_filters do
+							if wagon_filters[l] == _slot_filter then
+								_slot_filter_not_listed = false
+								wagon_filters_count[l] = wagon_filters_count[l] + 1
+							end
+						end
+						if _slot_filter_not_listed then
+							table.insert(wagon_filters, _slot_filter)
+							table.insert(wagon_filters_count, 1)
+						end
+					end
+				end
 				wagon_inventory.setbar(0)
 				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				if #chest_inventory > #wagon_inventory then
@@ -140,10 +158,19 @@ function placeChests(train)
 				for s = 1, 10 do			-- It seems all requester chests are limited to 10 request slots
 					local request = dummy_requester.get_request_slot(s)
 					if request then
-						chest.set_request_slot(request, s)
+						if #wagon_filters == 0 then
+							chest.set_request_slot(request, s)
+						else
+							for r = 1, #wagon_filters do
+								if request.name == wagon_filters[r] then
+									local request_item_amount = wagon_filters_count[r] * game.item_prototypes[request.name].stack_size
+									chest.set_request_slot({name=request.name, count=request_item_amount}, s)
+								end
+							end
+						end
 					end
 				end
-        created = chest
+			created = chest
 			end
 			if passive_provider then
 				wagon.minable = false
@@ -237,7 +264,7 @@ remote.add_interface("logistics_railway",
     get_chest_created_event = function()
       return getOrLoadCreatedEvent()
     end,
-    
+
     get_chest_destroyed_event = function()
       return getOrLoadDestroyedEvent()
     end,
