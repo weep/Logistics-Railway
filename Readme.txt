@@ -1,7 +1,7 @@
-Logistics Railway 1.0.5
+Logistics Railway 1.0.6
 =======================
 
-Version 1.0.5 was released March 27, 2016, was tested using Factorio v0.12.29, and was authored by Supercheese.
+Version 1.0.6 was released April 3, 2016, was tested using Factorio v0.12.29, and was authored by Supercheese.
 
 This mod allows you to load/unload your trains using your logistics robots! You don't need to change your trains at all -- simply replace some of your normal rail segments with one of the types of special Logistics Rails and any cargo wagon that stops on those rails will be automagically converted into a Logistics Wagon of the associated type.
 Then you can remove your inserters and chests and use only bots!
@@ -44,6 +44,8 @@ Nonetheless, it was that mod that also provided inspiration to create this one, 
 I extend thanks to TheAIBot for simplifying some duplicated code segments.
 
 Courtesy of Choumiko, Logistics Railway is compatible with his Smart Trains mod.
+
+New functionality arrived in v1.0.6 to deal with filters set on cargo wagons, thanks to operations: https://forums.factorio.com/viewtopic.php?p=143658#p143658
 
 The control panel icon used for Requester Rails was obtained from: https://www.iconfinder.com/icons/171951/calculator_icon
 That page states: "License: Free for non commercial use".

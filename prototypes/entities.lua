@@ -124,3 +124,7 @@ data:extend({
     circuit_wire_max_distance = 0
   },
 })
+
+if expensiveRails then
+	data.raw["logistic-container"]["requester-rail-dummy-chest"].minable.result = "requester-rail"
+end

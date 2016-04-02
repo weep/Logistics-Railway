@@ -39,3 +39,10 @@ requester_rail.pictures.straight_rail_diagonal.metals.tint = { r = 0.0, g = 0.0,
 requester_rail.pictures.straight_rail_horizontal.metals.tint = { r = 0.0, g = 0.0, b = 1.0, a = 0.5 }
 
 data:extend({storage_rail, passive_provider_rail, active_provider_rail, requester_rail})
+
+if expensiveRails then
+	data.raw["straight-rail"]["storage-rail"].minable.result = "storage-rail"
+	data.raw["straight-rail"]["passive-provider-rail"].minable.result = "passive-provider-rail"
+	data.raw["straight-rail"]["active-provider-rail"].minable.result = "active-provider-rail"
+	data.raw["straight-rail"]["requester-rail"].minable.result = "requester-rail"
+end

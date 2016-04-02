@@ -5,30 +5,30 @@ local on_chest_created = nil
 local on_chest_destroyed = nil
 
 function getOrLoadCreatedEvent()
-  if on_chest_created == nil then
-    on_chest_created = script.generate_event_name()
-  end
-  return on_chest_created
+	if on_chest_created == nil then
+	on_chest_created = script.generate_event_name()
+	end
+	return on_chest_created
 end
 
 function getOrLoadDestroyedEvent()
-  if on_chest_destroyed == nil then
-    on_chest_destroyed = script.generate_event_name()
-  end
-  return on_chest_destroyed
+	if on_chest_destroyed == nil then
+	on_chest_destroyed = script.generate_event_name()
+	end
+	return on_chest_destroyed
 end
 
 function generateEvents()
-  getOrLoadCreatedEvent()
-  getOrLoadDestroyedEvent()
+	getOrLoadCreatedEvent()
+	getOrLoadDestroyedEvent()
 end
 
 script.on_load(function()
-   generateEvents()
+	generateEvents()
 end)
 
 script.on_init(function()
-  generateEvents()
+	generateEvents()
 end)
 
 script.on_event(defines.events.on_built_entity, function(event)
@@ -170,7 +170,7 @@ function placeChests(train)
 						end
 					end
 				end
-			created = chest
+				created = chest
 			end
 			if passive_provider then
 				wagon.minable = false
@@ -180,7 +180,7 @@ function placeChests(train)
 				wagon_inventory.setbar(0)
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
-        created = chest
+				created = chest
 			end
 			if active_provider then
 				wagon.minable = false
@@ -190,7 +190,7 @@ function placeChests(train)
 				wagon_inventory.setbar(0)
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
-        created = chest
+				created = chest
 			end
 			if storage then
 				wagon.minable = false
@@ -204,7 +204,7 @@ function placeChests(train)
 				end
 				copyInventory(wagon, chest) -- Wagon to chest
 				wagon.clear_items_inside()
-        created = chest
+				created = chest
 			end
 			if created then
 			   game.raise_event(on_chest_created, {chest=created, wagon_index=i, train=train})
@@ -260,12 +260,12 @@ function removeDummy(surface, dummyName, position)
 end
 
 remote.add_interface("logistics_railway",
-  {
-    get_chest_created_event = function()
-      return getOrLoadCreatedEvent()
-    end,
+{
+	get_chest_created_event = function()
+		return getOrLoadCreatedEvent()
+	end,
 
-    get_chest_destroyed_event = function()
-      return getOrLoadDestroyedEvent()
-    end,
-  })
+	get_chest_destroyed_event = function()
+		return getOrLoadDestroyedEvent()
+	end,
+})
