@@ -16,7 +16,7 @@ data:extend({
     close_sound = { filename = "__base__/sound/metallic-chest-close.ogg", volume = 0.7 },
     picture =
     {
-      filename = "__Logistics Railway__/graphics/null.png",
+      filename = "__Logistics-Railway__/graphics/null.png",
       priority = "low",
       width = 1,
       height = 1,
@@ -41,7 +41,7 @@ data:extend({
     close_sound = { filename = "__base__/sound/metallic-chest-close.ogg", volume = 0.7 },
     picture =
     {
-      filename = "__Logistics Railway__/graphics/null.png",
+      filename = "__Logistics-Railway__/graphics/null.png",
       priority = "low",
       width = 1,
       height = 1,
@@ -66,7 +66,7 @@ data:extend({
     close_sound = { filename = "__base__/sound/metallic-chest-close.ogg", volume = 0.7 },
     picture =
     {
-      filename = "__Logistics Railway__/graphics/null.png",
+      filename = "__Logistics-Railway__/graphics/null.png",
       priority = "low",
       width = 1,
       height = 1,
@@ -91,7 +91,7 @@ data:extend({
     close_sound = { filename = "__base__/sound/metallic-chest-close.ogg", volume = 0.7 },
     picture =
     {
-      filename = "__Logistics Railway__/graphics/null.png",
+      filename = "__Logistics-Railway__/graphics/null.png",
       priority = "low",
       width = 1,
       height = 1,
@@ -115,7 +115,7 @@ data:extend({
     logistic_mode = "requester",
     picture =
     {
-      filename = "__Logistics Railway__/graphics/null.png",
+      filename = "__Logistics-Railway__/graphics/null.png",
       priority = "low",
       width = 1,
       height = 1,
