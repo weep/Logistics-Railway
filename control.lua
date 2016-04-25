@@ -94,6 +94,9 @@ script.on_event(defines.events.on_robot_pre_mined, function(event) -- The dummy 
 end)
 
 script.on_event(defines.events.on_entity_died, function(event) -- The dummy chest also can't die (indestructible), so we don't have to worry about it
+	if event.entity.train then
+		syncChests(event.entity.train)
+	end
 	if event.entity.name == "requester-rail" then
 		removeDummy(event.entity.surface, "requester-rail-dummy-chest", event.entity.position)
 	end
