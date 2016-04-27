@@ -1,5 +1,6 @@
 require "util"
 require "defines"
+require "stdlib/entity/inventory"
 
 local on_chest_created = nil
 local on_chest_destroyed = nil
@@ -110,14 +111,6 @@ script.on_event(defines.events.on_train_changed_state, function(event)
 	end
 end)
 
-function copyInventory(from, to)
-	local inventory = from.get_inventory(defines.inventory.chest)
-	local contents = inventory.get_contents()
-	for n, c in pairs(contents) do
-		to.insert({name=n, count=c})
-	end
-end
-
 function placeChests(train)
 	for i = 1, #train.cargo_wagons do
 		local wagon = train.cargo_wagons[i]
@@ -152,10 +145,11 @@ function placeChests(train)
 				end
 				wagon_inventory.setbar(0)
 				local chest_inventory = chest.get_inventory(defines.inventory.chest)
+				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				if #chest_inventory > #wagon_inventory then
 					chest_inventory.setbar(#wagon_inventory)	-- Limit the chest inventory size to equal the wagon inventory size; proxy chest has a lot of slots to accommodate modded wagons
 				end
-				copyInventory(wagon, chest) -- Wagon to chest
+				Inventory.copy_inventory(wagon_inventory, chest_inventory) -- Wagon to chest
 				wagon.clear_items_inside()
 				local dummy_requester = wagon.surface.find_entity("requester-rail-dummy-chest", wagon.position)
 				for s = 1, 10 do			-- It seems all requester chests are limited to 10 request slots
@@ -179,9 +173,10 @@ function placeChests(train)
 				wagon.minable = false
 				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "passive-provider-chest-from-wagon", position = wagon.position, force = wagon.force})
+				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				wagon_inventory.setbar(0)
-				copyInventory(wagon, chest) -- Wagon to chest
+				Inventory.copy_inventory(wagon_inventory, chest_inventory) -- Wagon to chest
 				wagon.clear_items_inside()
 				created = chest
 			end
@@ -189,9 +184,10 @@ function placeChests(train)
 				wagon.minable = false
 				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "active-provider-chest-from-wagon", position = wagon.position, force = wagon.force})
+				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				wagon_inventory.setbar(0)
-				copyInventory(wagon, chest) -- Wagon to chest
+				Inventory.copy_inventory(wagon_inventory, chest_inventory) -- Wagon to chest
 				wagon.clear_items_inside()
 				created = chest
 			end
@@ -199,13 +195,14 @@ function placeChests(train)
 				wagon.minable = false
 				wagon.operable = false
 				local chest = wagon.surface.create_entity({name = "storage-chest-from-wagon", position = wagon.position, force = wagon.force})
+				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
 				wagon_inventory.setbar(0)
 				local chest_inventory = chest.get_inventory(defines.inventory.chest)
 				if #chest_inventory > #wagon_inventory then
 					chest_inventory.setbar(#wagon_inventory) -- Limit the chest inventory size to equal the wagon inventory size; proxy chest has a lot of slots to accommodate modded wagons
 				end
-				copyInventory(wagon, chest) -- Wagon to chest
+				Inventory.copy_inventory(wagon_inventory, chest_inventory) -- Wagon to chest
 				wagon.clear_items_inside()
 				created = chest
 			end
@@ -231,10 +228,11 @@ end
 
 function prepareDeparture(wagon, chestName)
 	local chest = wagon.surface.find_entity(chestName, wagon.position)
-	if chest then
+	if chest and chest.valid then
 		local wagon_inventory = wagon.get_inventory(defines.inventory.chest)
+		local chest_inventory = chest.get_inventory(defines.inventory.chest)
 		wagon_inventory.setbar()
-		copyInventory(chest, wagon) -- Chest to wagon
+		Inventory.copy_inventory(chest_inventory, wagon_inventory) -- Chest to wagon
 		chest.destroy()
 		wagon.minable = true
 		wagon.operable = true
@@ -243,7 +241,7 @@ end
 
 function orderEntityDeconstruction(surface, entityName, position)
 	local chest = surface.find_entity(entityName, position)
-	if chest then
+	if chest and chest.valid then
 		chest.order_deconstruction(chest.force)
 	end
 end
@@ -255,7 +253,7 @@ end
 
 function removeDummy(surface, dummyName, position)
 	local dummy = surface.find_entity(dummyName, position)
-	if dummy then
+	if dummy and dummy.valid then
 		dummy.destroy()
 		return true
 	end
