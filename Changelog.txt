@@ -43,3 +43,9 @@ Version 1.0.7 - April 27, 2016
 The mod is now using the Factorio Standard Library (https://github.com/Afforess/Factorio-Stdlib/wiki).
 Clean up dummy logistics chests when a wagon is destroyed by damage.
 Move tooltip to the proper entity that should be clicked to set Requester Rail requests.
+
+
+Version 1.0.8 - May 16, 2016
+----------------------------
+You can now mine (i.e. pick up) wagons while they are interacting with Logistics Rails.
+Locomotives can now be automatically fueled up using Requester Rails. Please be careful to only request valid fuel items into locomotives, as all non-fuel items that cannot be inserted into locomotives will be destroyed. Also note that locomotives cannot use the other three types of rail.
