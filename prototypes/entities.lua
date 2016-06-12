@@ -107,7 +107,7 @@ data:extend({
 	minable = {hardness = 0.2, mining_time = 0.5, result = "straight-rail"},
     max_health = 0,
     corpse = "small-remnants",
-    collision_box = {{-1.0, -1.0}, {1.0, 1.0}},
+    collision_box = {{-0.99999, -0.99999}, {0.99999, 0.99999}},
     selection_box = {{-1.25, -1.25}, {1.25, 1.25}},
 	collision_mask = {"not-colliding-with-itself"},
 	order = "z",
